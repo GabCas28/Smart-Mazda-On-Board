@@ -21,6 +21,11 @@ def get_current_data():
 @app.route('/processedData')
 def get_processed_data():
     return {
+        'startTime' : time.strftime('%A %B, %d %Y %H:%M:%S'),
+        'duration' :random.randrange(0, 100000),
+        'time' : time.time(),
+        'coolantTemperature':random.randrange(0, 100),
+        'throttlePosition':random.randrange(0, 100),
         'speed': random.randrange(0, 150),
         'rpm': random.randrange(0, 100000,100),
         'engineLoad': random.randrange(0, 100),
