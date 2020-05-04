@@ -11,6 +11,8 @@ def main():
     # Local database
     # Initial data for the trip
 
+    # Test comment by Johan
+
 
 @app.route('/time')
 def get_current_time():
