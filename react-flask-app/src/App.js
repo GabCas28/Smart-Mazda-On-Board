@@ -8,6 +8,7 @@ function App() {
 	const [ streamData, setstreamData ] = useState({speed:0,rpm:0,engineLoad:0});
 
 	useEffect(() => {
+		
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
