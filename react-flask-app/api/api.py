@@ -4,7 +4,9 @@ import random
 import database
 
 # Makes a new table in the DB that is called the current date and time
-table = database.getDataBase(time.strftime('%d-%m-%Y_%H:%M:%S'))
+table, db = database.getDataBase(time.strftime('%d-%m-%Y_%H:%M:%S'))
+
+database.readJsonIntoMongo(db)
 
 app = Flask(__name__)
 @app.route('/time')
@@ -31,3 +33,4 @@ def get_processed_data():
         'rpm': random.randrange(0, 100000,100),
         'engineLoad': random.randrange(0, 100),
     }
+
