@@ -9,7 +9,8 @@
         "react": "^16.13.1",
         "react-dom": "^16.13.1",
         "react-faux-dom": "^4.5.0",
-        "react-scripts": "3.4.1"
+        "react-scripts": "3.4.1",
+        "tinydb": "^0.1.0"
     },
     "scripts": {
         "start": "react-scripts start",
