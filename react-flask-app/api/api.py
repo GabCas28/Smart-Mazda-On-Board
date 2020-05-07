@@ -1,13 +1,14 @@
 import time
 from flask import Flask
 import random
+from chunk import Chunk 
+from trip import Trip
 import database
 
 # Makes a new table in the DB that is called the current date and time
 table = database.getDataBase(time.strftime('%d-%m-%Y_%H:%M:%S'))
-
-trip = {}
-chunk = {}
+trip = Trip()
+chunk = Chunk()
 
 
 def getSpeed():
@@ -30,65 +31,11 @@ def getCoolantTemperature():
     return random.randrange(0, 100)
 
 
-def initializeTrip():
-    global trip
-    trip = {
-        'startTime': time.strftime('%A %B, %d %Y %H:%M:%S'),
-        'steps': 0,
-        'duration': 0,
-        'time': [],
-        'coolantTemperature': [],
-        'throttlePosition': [],
-        'speed': [],
-        'rpm': [],
-        'engineLoad': [],
-    }
-
-
-def initializeChunk():
-    global chunk
-    chunk = {
-        'startTime': time.time(),
-        'steps': 0,
-        'endTime': 0,
-        'duration': 0,
-        'coolantTemperature': 0,
-        'throttlePosition': 0,
-        'speed': 0,
-        'rpm': 0,
-        'engineLoad': 0,
-    }
-
-
-def updateTrip():
-    global trip
-    trip['duration'] = trip['duration'] + chunk["duration"]
-    trip['time'].append(time.time())
-    trip['speed'].append(chunk["speed"]/chunk["steps"])
-    trip['rpm'].append(chunk["rpm"]/chunk["steps"])
-    trip['engineLoad'].append(chunk["engineLoad"]/chunk["steps"])
-    trip['coolantTemperature'].append(
-        chunk["coolantTemperature"]/chunk["steps"])
-    trip['throttlePosition'].append(chunk["throttlePosition"]/chunk["steps"])
-    trip["steps"] = trip["steps"] + 1
-
-
-def updateChunk():
-    global chunk
-    chunk['duration'] = trip['duration'] + time.time() - chunk['endTime']
-    chunk['endTime'] = time.time()
-    chunk['speed'] = chunk['speed'] + getSpeed()
-    chunk['rpm'] = chunk['rpm'] + getRPM()
-    chunk['engineLoad'] = chunk['engineLoad'] + getEngineLoad()
-    chunk['coolantTemperature'] = chunk['coolantTemperature'] + \
-        getCoolantTemperature()
-    chunk['throttlePosition'] = chunk['throttlePosition'] + getThrottlePosition()
-    chunk["steps"] = chunk["steps"] + 1
-
-
 def initializeData():
-    initializeTrip()
-    initializeChunk()
+    global chunk, trip
+    
+    chunk = Chunk()
+    trip = Trip()
 
 
 app = Flask(__name__)
@@ -105,21 +52,23 @@ def get_current_time():
 
 
 @app.route('/streamData')
-def get_current_data():
-    updateChunk()
-    return {
+def getCurrentData():
+    global chunk
+    current_data = {
         'speed': getSpeed(),
         'rpm': getRPM(),
         'engineLoad': getEngineLoad(),
-        'coolantTemperature': getCoolantTemperature(),
-        'throttlePosition': getThrottlePosition()
+        'coolantTemp': getCoolantTemperature(),
+        'throttlePos': getThrottlePosition()
     }
+    chunk.update(current_data)
+    return current_data
 
 
 @app.route('/processedData')
-def get_processed_data():
-    # Updates the trip table every time this function is called
-    database.updateTrip(table, time.strftime('%H:%M:%S'), random.randrange(0, 150), random.randrange(0, 100000,100), random.randrange(0, 100), random.randrange(0, 100), random.randrange(40, 120))
-    updateTrip()
-    initializeChunk()
-    return trip
+def getProcessedData():
+    global trip, chunk
+    processed_data = chunk.getData()
+    trip.update(chunk)
+    chunk = Chunk()
+    return processed_data

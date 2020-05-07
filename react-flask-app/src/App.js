@@ -23,7 +23,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			100
+			40
 		);
 		const processedDataCall = setInterval(
 			() =>
