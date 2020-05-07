@@ -16,7 +16,7 @@ def getSpeed():
 
 
 def getRPM():
-    return random.randrange(0, 100000, 100)
+    return random.randrange(0, 8000, 100)
 
 
 def getEngineLoad():

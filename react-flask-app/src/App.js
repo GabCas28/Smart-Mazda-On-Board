@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-// import Gauge from "./components/Gauge";
+import Gauge from './components/Gauge';
+
+function handleResultTextChange(value) {
+	this.setState({ value: value });
+}
 
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
@@ -8,8 +12,8 @@ function App() {
 	const [ streamData, setstreamData ] = useState(0);
 
 	useEffect(() => {
-		fetch("/start").then((res)=> res.json()).then(async (data) => {
-				console.log(data)
+		fetch('/start').then((res) => res.json()).then(async (data) => {
+			console.log(data);
 		});
 		const timeCall = setInterval(
 			() =>
@@ -23,7 +27,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			40
+			250
 		);
 		const processedDataCall = setInterval(
 			() =>
@@ -64,6 +68,16 @@ function App() {
 					</tr>
 				</table>
 			</header>
+			<div className="black">
+				<Gauge
+					data={streamData}
+					minValue={0}
+					maxValue={1000}
+					width={400}
+					height={200}
+					className="gauge-canvas"
+				/>
+			</div>
 		</div>
 	);
 }
