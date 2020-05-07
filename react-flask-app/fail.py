@@ -10,7 +10,8 @@ def connectToPort(portNumber=0):
     """ Connect to selected port, by default port 0"""
 
     ports = scanDevices()
-
+    print(ports)
+    portNumber = int(input("number: "))
     if (obd.OBD(ports[portNumber])):
         return obd.OBD(ports[portNumber])
     else:
