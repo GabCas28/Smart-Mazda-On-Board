@@ -80,3 +80,8 @@ def getTrip():
     global trip
     processed_data = trip.getData()    
     return processed_data
+
+@app.route('/upload')
+def upload():
+    database.readJsonIntoMongo(db)
+    return "Uploaded to database"

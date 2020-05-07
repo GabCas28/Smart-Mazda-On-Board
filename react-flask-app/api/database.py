@@ -16,15 +16,13 @@ def updateTrip(table, DBentry):
     table.truncate()
     table.insert(DBentry)
 
-"""def readJsonIntoMongo(db):
+def readJsonIntoMongo(db):
     client = MongoClient("mongodb+srv://<mazda>:<V2KMvmtixGkOxq2h>@cluster0-lpt2w.gcp.mongodb.net/test?retryWrites=true&w=majority")
-    mDB = client["Mazda-new-DB"]
-    colleciton = mDB["Testing"]
+    mDB = client.MazdaDB
+    colleciton = mDB.Testing
 
-    #with open("Trips.json") as f:
     f = open("Trips.json")
     file_data = json.load(f)
     print("Before insert")
-    for tables in db.tables():
-        colleciton.insert_one(db.tables)
-    print("After insert")"""
+    colleciton.insert_one(file_data)
+    print("After insert")
