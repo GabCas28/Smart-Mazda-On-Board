@@ -23,13 +23,13 @@ class Trip:
         self.avThrottlePos = 0
         self.snaps = []
 
-    def update(self, chunk):
-        self.updateSpeed(chunk.speed)
-        self.updateRPM(chunk.rpm)
-        self.updateThrottlePos(chunk.throttlePos)
-        self.updateEngineLoad(chunk.engineLoad)
-        self.updateCoolantTemp(chunk.coolantTemp)
-        self.addSnap(chunk)
+    def update(self, data):
+        self.updateSpeed(data['speed'])
+        self.updateRPM(data['rpm'])
+        self.updateThrottlePos(data['throttlePos'])
+        self.updateEngineLoad(data['engineLoad'])
+        self.updateCoolantTemp(data['coolantTemp'])
+        self.addSnap(data)
         self.incrementSnaps()
 
     def getData(self):

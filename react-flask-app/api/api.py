@@ -69,6 +69,13 @@ def getCurrentData():
 def getProcessedData():
     global trip, chunk
     processed_data = chunk.getData()
-    trip.update(chunk)
+    trip.update(processed_data)
     chunk = Chunk()
+    return trip.getData()
+
+
+@app.route('/getTrip')
+def getTrip():
+    global trip
+    processed_data = trip.getData()
     return processed_data

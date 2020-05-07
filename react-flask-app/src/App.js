@@ -58,9 +58,9 @@ function App() {
 					</tr>
 					<tr>
 						<td>Average</td>
-						<td>{processedData.speed}</td>
-						<td>{processedData.engineLoad}</td>
-						<td>{processedData.rpm}</td>
+						<td>{processedData.avSpeed}</td>
+						<td>{processedData.avEngineLoad}</td>
+						<td>{processedData.avRPM}</td>
 					</tr>
 				</table>
 			</header>
