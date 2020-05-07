@@ -4,10 +4,13 @@ import './App.css';
 
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
-	const [ processedData, setProcessedData ] = useState({speed:0,rpm:0,engineLoad:0});
-	const [ streamData, setstreamData ] = useState({speed:0,rpm:0,engineLoad:0});
+	const [ processedData, setProcessedData ] = useState(0);
+	const [ streamData, setstreamData ] = useState(0);
 
 	useEffect(() => {
+		fetch("/start").then((res)=> res.json()).then(async (data) => {
+				console.log(data)
+		});
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
@@ -20,7 +23,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			40
+			100
 		);
 		const processedDataCall = setInterval(
 			() =>
