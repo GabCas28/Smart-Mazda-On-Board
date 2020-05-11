@@ -1,14 +1,20 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
-// import Gauge from "./components/Gauge";
+import Gauge from './components/Gauge';
+
+function handleResultTextChange(value) {
+	this.setState({ value: value });
+}
 
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
-	const [ processedData, setProcessedData ] = useState({speed:0,rpm:0,engineLoad:0});
-	const [ streamData, setstreamData ] = useState({speed:0,rpm:0,engineLoad:0});
+	const [ processedData, setProcessedData ] = useState(0);
+	const [ streamData, setstreamData ] = useState(0);
 
 	useEffect(() => {
-		
+		fetch('/start').then((res) => res.json()).then(async (data) => {
+			console.log(data);
+		});
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
@@ -21,7 +27,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			40
+			250
 		);
 		const processedDataCall = setInterval(
 			() =>
@@ -55,13 +61,63 @@ function App() {
 						<td>{streamData.rpm}</td>
 					</tr>
 					<tr>
-						<td>Average</td>
-						<td>{processedData.speed}</td>
-						<td>{processedData.engineLoad}</td>
-						<td>{processedData.rpm}</td>
+						<td>Stream Average</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].speed : 0}</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].engineLoad : 0}</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].rpm : 0}</td>
+					</tr>
+					<tr>
+						<td>Total Average</td>
+						<td>{processedData.avSpeed}</td>
+						<td>{processedData.avEngineLoad}</td>
+						<td>{processedData.avRPM}</td>
+					</tr>
+					<tr>
+						<td><Gauge
+							data={streamData}
+							minValue={0}
+							maxValue={100}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.speed}
+							minValue={0}
+							maxValue={150}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.engineLoad}
+							minValue={0}
+							maxValue={100}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.rpm}
+							minValue={0}
+							maxValue={8000}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
 					</tr>
 				</table>
 			</header>
+			<div className="black">
+				<Gauge
+					data={streamData.rpm}
+					minValue={0}
+					maxValue={8000}
+					width={400}
+					height={200}
+					className="gauge-canvas"
+				/>
+			</div>
 		</div>
 	);
 }
