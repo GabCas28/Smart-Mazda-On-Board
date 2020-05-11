@@ -27,7 +27,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			250
+			400
 		);
 		const processedDataCall = setInterval(
 			() =>
@@ -74,12 +74,12 @@ function App() {
 					</tr>
 					<tr>
 						<td><Gauge
-							data={streamData}
+							data={100}
 							minValue={0}
 							maxValue={100}
 							width={400}
 							height={200}
-							className="gauge-canvas"
+							value={100}
 						/></td>
 						<td><Gauge
 							data={streamData.speed}
@@ -87,7 +87,7 @@ function App() {
 							maxValue={150}
 							width={400}
 							height={200}
-							className="gauge-canvas"
+							value={streamData.speed}
 						/></td>
 						<td><Gauge
 							data={streamData.engineLoad}
@@ -95,7 +95,7 @@ function App() {
 							maxValue={100}
 							width={400}
 							height={200}
-							className="gauge-canvas"
+							value={streamData.engineLoad}
 						/></td>
 						<td><Gauge
 							data={streamData.rpm}
@@ -103,7 +103,7 @@ function App() {
 							maxValue={8000}
 							width={400}
 							height={200}
-							className="gauge-canvas"
+							value={streamData.rpm}
 						/></td>
 					</tr>
 				</table>
@@ -115,7 +115,7 @@ function App() {
 					maxValue={8000}
 					width={400}
 					height={200}
-					className="gauge-canvas"
+					value={streamData.speed}
 				/>
 			</div>
 		</div>
