@@ -3,39 +3,21 @@ from flask import Flask
 import random
 from chunk import Chunk 
 from trip import Trip
-import database
+from TripDB import TripDB
+from OBDConnection import OBDConnection
 
-# Makes a new table in the DB that is called the current date and time
-table = database.getDataBase(time.strftime('%d-%m-%Y_%H:%M:%S'))
+database = TripDB()
 trip = Trip()
 chunk = Chunk()
-
-
-def getSpeed():
-    return random.randrange(0, 150)
-
-
-def getRPM():
-    return random.randrange(0, 8000, 100)
-
-
-def getEngineLoad():
-    return random.randrange(0, 100)
-
-
-def getThrottlePosition():
-    return random.randrange(0, 100)
-
-
-def getCoolantTemperature():
-    return random.randrange(0, 100)
-
+obdConnection = OBDConnection()
 
 def initializeData():
-    global chunk, trip
+    global chunk, trip, database
     
+    database = TripDB()
     chunk = Chunk()
     trip = Trip()
+    obdConnection = OBDConnection()
 
 
 app = Flask(__name__)
@@ -54,28 +36,31 @@ def get_current_time():
 @app.route('/streamData')
 def getCurrentData():
     global chunk
-    current_data = {
-        'speed': getSpeed(),
-        'rpm': getRPM(),
-        'engineLoad': getEngineLoad(),
-        'coolantTemp': getCoolantTemperature(),
-        'throttlePos': getThrottlePosition()
-    }
+    
+    current_data = obdConnection.getCurrentData()
     chunk.update(current_data)
     return current_data
 
 
 @app.route('/processedData')
 def getProcessedData():
-    global trip, chunk
-    processed_data = chunk.getData()
-    trip.update(processed_data)
-    chunk = Chunk()
+    trip.update(chunk.getData())
+    database.updateTrip(trip.getData())
+    chunk.restart()
     return trip.getData()
 
 
 @app.route('/getTrip')
 def getTrip():
-    global trip
-    processed_data = trip.getData()
-    return processed_data
+    return trip.getData()   
+
+@app.route('/upload')
+def upload():
+    database.upload()
+    return "Uploaded to database"
+
+@app.route('/uploadAndDelete')
+def uploadAndDelete():
+    database.upload()
+    database.clear()
+    return "Uploaded to database"

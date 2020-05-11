@@ -61,18 +61,58 @@ function App() {
 						<td>{streamData.rpm}</td>
 					</tr>
 					<tr>
-						<td>Average</td>
+						<td>Stream Average</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].speed : 0}</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].engineLoad : 0}</td>
+						<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].rpm : 0}</td>
+					</tr>
+					<tr>
+						<td>Total Average</td>
 						<td>{processedData.avSpeed}</td>
 						<td>{processedData.avEngineLoad}</td>
 						<td>{processedData.avRPM}</td>
+					</tr>
+					<tr>
+						<td><Gauge
+							data={streamData}
+							minValue={0}
+							maxValue={100}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.speed}
+							minValue={0}
+							maxValue={150}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.engineLoad}
+							minValue={0}
+							maxValue={100}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
+						<td><Gauge
+							data={streamData.rpm}
+							minValue={0}
+							maxValue={8000}
+							width={400}
+							height={200}
+							className="gauge-canvas"
+						/></td>
 					</tr>
 				</table>
 			</header>
 			<div className="black">
 				<Gauge
-					data={streamData}
+					data={streamData.rpm}
 					minValue={0}
-					maxValue={1000}
+					maxValue={8000}
 					width={400}
 					height={200}
 					className="gauge-canvas"

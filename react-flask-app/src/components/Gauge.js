@@ -2,7 +2,7 @@ import ReactFauxDOM from 'react-faux-dom';
 import './Gauge.css';
 import * as d3 from 'd3';
 
-function Gauge(props) {
+function Gauge({ data, width, height, minValue, maxValue }) {
 	const pi = Math.PI;
 	const startAngle = -pi / 2;
 	const endAngle = -startAngle;
@@ -10,11 +10,11 @@ function Gauge(props) {
 	let svg = createSVG(div);
 	createGaugeBackground(svg);
 	createGauge(svg);
-	
+
 	function createSVG(div) {
 		const margin = { top: 20, right: 20, bottom: 20, left: 20 },
-			graphWidth = props.width - 50 - margin.left - margin.right,
-			graphHeight = props.height - margin.top - margin.bottom;
+			graphWidth = width - 50 - margin.left - margin.right,
+			graphHeight = height - margin.top - margin.bottom;
 
 		const cent = { x: graphWidth / 2 + 5, y: graphHeight / 2 + 5 };
 
@@ -33,12 +33,10 @@ function Gauge(props) {
 
 	function createGaugeBackground(svg) {
 		let n = 20;
-		let data_background = d3.range(startAngle, endAngle, pi / n);
-
+		let data_background = [ startAngle, pi / 16, 5 * pi / 16 ];
 		let pie_background = data_background.slice(0);
-		let colorScale = d3
-			.scaleSequential(d3.interpolateRdYlGn)
-			.domain([ data_background[data_background.length - 1], data_background[0] ]);
+		let colors = [ 'green', 'yellow', 'red' ];
+		let colorScale = (d, i) => colors[i];
 
 		pie_background.push(endAngle);
 
@@ -60,26 +58,36 @@ function Gauge(props) {
 			.append('path')
 			.attr('class', 'slice')
 			.attr('d', arc)
-			.attr('fill', function(d) {
-				return colorScale(d);
+			.attr('fill', function(d, i) {
+				return colorScale(d, i);
 			})
-			.attr('stroke', function(d) {
-				return colorScale(d);
-			})
-			.attr('stroke-width', 4);
+			.attr('stroke', 'black')
+			.attr('stroke-width', 0);
+		// .attr('stroke', function(d,i) {
+		// 	return colorScale(d,i);
+		// // })
+		// .attr('stroke-width', 4);
 	}
 
 	function createGauge(svg) {
-		let angle = d3.scaleLinear().range([ startAngle, endAngle ]).domain([ 0, 8000 ]);
+		let angle = d3.scaleLinear().range([ startAngle, endAngle ]).domain([ minValue, maxValue ]);
 		let _data = [];
-		_data.push(props.data.rpm);
+		_data.push(data);
 		// const color = d3.scaleOrdinal(d3['schemeSet3']);
 		// color.domain(data.map((d) => getMidi(d)));
 
 		const pie = d3.pie().sort(null).value((e) => e);
-		const arcPath = d3.arc().innerRadius(35).outerRadius(55).startAngle(endAngle).endAngle((e) => angle(e));
+		const arcPath = d3.arc().innerRadius(40).outerRadius(50).startAngle(endAngle).endAngle((e) => angle(e));
 		const paths = svg.selectAll('path.gauge').data(_data);
-		paths.enter().append('path').attr('class', 'arc').attr('fill', 'black').attr('d', arcPath);
+		paths
+			.enter()
+			.append('path')
+			.attr('class', 'arc')
+			.attr('fill', 'darkblue')
+			.attr('opacity', '1')
+			.attr('stroke', 'black')
+			.attr('stroke-width', 5)
+			.attr('d', arcPath);
 	}
 
 	return div.toReact();

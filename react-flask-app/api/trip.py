@@ -34,12 +34,12 @@ class Trip:
 
     def getData(self):
         return{
+            'startTime': self.startTime,
             'avSpeed': self.avSpeed,
             'avRPM': self.avRPM,
             'avEngineLoad': self.avEngineLoad,
             'avCoolantTemp': self.avCoolantTemp,
             'avThrottlePos': self.avThrottlePos,
-            'startTime': self.startTime,
             'nSnaps': self.nSnaps,
             'snaps': self.snaps
         }

@@ -13,9 +13,9 @@ def getDataBase(time):
 
 # Enters the data into the table of the current trip
 def updateTrip(table, DBentry):   
-    table.insert(DBentry, )
+    table.insert(DBentry)
 
-def readJsonIntoMongo(db):
+def readJsonIntoMongo():
     client = MongoClient("mongodb+srv://mazda:V2KMvmtixGkOxq2h@cluster0-lpt2w.gcp.mongodb.net/test?retryWrites=true&w=majority")
     mDB = client.MazdaDB
     colleciton = mDB.Testing

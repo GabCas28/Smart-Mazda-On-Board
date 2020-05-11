@@ -8,15 +8,18 @@ class Chunk:
     throttlePos=0 
     engineLoad=0
     steps=0
-    startTime=""
-    def __init(self):
-        self.startTime: time.time()
-        self.steps: 0
-        self.coolantTemp: 0
-        self.throttlePos: 0
-        self.speed: 0
-        self.rpm: 0
-        self.engineLoad: 0
+    startTime=0
+    def __init__(self):
+        self.startTime= time.time()
+        self.steps= 0
+        self.coolantTemp= 0
+        self.throttlePos= 0
+        self.speed= 0
+        self.rpm= 0
+        self.engineLoad= 0 
+
+    def restart(self):
+        self.__init__()
 
     def update(self, data):
         self.updateSpeed(data['speed'])
