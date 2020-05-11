@@ -29,12 +29,14 @@ class Trip:
         self.updateThrottlePos(data['throttlePos'])
         self.updateEngineLoad(data['engineLoad'])
         self.updateCoolantTemp(data['coolantTemp'])
+        self.updateDuration(data['startTime'])
         self.addSnap(data)
         self.incrementSnaps()
 
     def getData(self):
         return{
             'startTime': self.startTime,
+            'duration': self.tripDuration,
             'avSpeed': self.avSpeed,
             'avRPM': self.avRPM,
             'avEngineLoad': self.avEngineLoad,
@@ -44,8 +46,8 @@ class Trip:
             'snaps': self.snaps
         }
 
-    def updateDuration(self, duration):
-        pass
+    def updateDuration(self, startTime):
+        self.tripDuration = round(self.tripDuration + (time.time() - startTime),1)
 
     def addSnap(self, chunk):
         self.snaps.append(chunk)
