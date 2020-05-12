@@ -50,7 +50,7 @@ class OBDConnection:
     def getCurrentData(self):
         return {
             'speed': self.getSpeed(),
-            'rpm': self.getRPM(),
+            'rpm': round(self.getRPM(),0),
             'engineLoad': self.getEngineLoad(),
             'coolantTemp': self.getCoolantTemp(),
             'throttlePos': round(self.getThrottlePos(),2)

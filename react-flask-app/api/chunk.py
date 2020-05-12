@@ -44,7 +44,7 @@ class Chunk:
         self.speed = round((self.speed * self.steps + speed) / (self.steps+1),2)
 
     def updateRPM(self, rpm):
-        self.rpm = round((self.rpm * self.steps + rpm) / (self.steps+1),2)
+        self.rpm = round((self.rpm * self.steps + rpm) / (self.steps+1),0)
 
     def updateEngineLoad(self, engineLoad):
         self.engineLoad = round((self.engineLoad * self.steps +

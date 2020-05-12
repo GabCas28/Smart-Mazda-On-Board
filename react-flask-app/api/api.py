@@ -6,23 +6,24 @@ from trip import Trip
 from TripDB import TripDB
 from OBDConnection import OBDConnection
 
-database = TripDB()
-trip = Trip()
-chunk = Chunk()
-obdConnection = OBDConnection()
+database = None
+trip = None
+chunk = None
+obdConnection = None
 
-# def initializeData():
-#     global chunk, trip, database, obdConnection
-#     database = TripDB()
-#     trip = Trip()
-#     chunk = Chunk()
-#     obdConnection = OBDConnection()
+
+
+def initializeData():
+    initTrip()
+    initChunk()
+    initDB()
+    connectOBD()
 
 
 app = Flask(__name__)
-# @app.route('/start')
-# def start_trip():
-#     initializeData()
+@app.route('/start')
+def start_trip():
+    initializeData()
 
 
 @app.route('/time')
@@ -45,11 +46,12 @@ def get_current_time():
 @app.route('/streamData')
 def getCurrentData():
     global chunk
-
-    current_data = obdConnection.getCurrentData()
-    chunk.update(current_data)
-    return current_data
-
+    if obdConnection:
+        current_data = obdConnection.getCurrentData()
+        chunk.update(current_data)
+        return current_data
+    else:
+        return {}
 
 @app.route('/processedData')
 def getProcessedData():
@@ -57,7 +59,6 @@ def getProcessedData():
     database.updateTrip(trip.getData())
     chunk.restart()
     return trip.getData()
-
 
 @app.route('/getTrip')
 def getTrip():
@@ -82,3 +83,18 @@ def connectOBD():
     else: 
         obdConnection = OBDConnection()
         return "OBD CONNECTED"
+
+def initTrip():
+    global trip
+    if not trip:
+        trip=Trip()
+
+def initChunk():
+    global chunk
+    if not chunk:
+        chunk=Chunk()
+
+def initDB():
+    global database
+    if not database:
+        database=TripDB()

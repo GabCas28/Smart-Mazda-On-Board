@@ -6,8 +6,9 @@ function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
 	const [ processedData, setProcessedData ] = useState(0);
 	const [ streamData, setstreamData ] = useState(0);
-
+	const [ obdStatus, setOBDStatus] = useState(null);
 	useEffect(() => {
+		fetch('/start');
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
@@ -79,8 +80,8 @@ function App() {
 							<td>{processedData.avSpeed}</td>
 							<td>{processedData.avEngineLoad}</td>
 							<td>{processedData.avRPM}</td>
-							<td>{processedData.throttlePos}</td>
-							<td>{processedData.coolantTemp}</td>
+							<td>{processedData.avThrottlePos}</td>
+							<td>{processedData.avCoolantTemp}</td>
 						</tr>
 						<tr>
 							<td>
