@@ -147,7 +147,7 @@ function App() {
 					maxValue={16384}
 					width={400}
 					height={200}
-					className="gauge-canvas"
+					value={streamData.speed}
 				/>
 			</div>
 		</div>
