@@ -7,21 +7,28 @@ class OBDConnection:
 
     def __init__(self):
         self.ports = self.getPorts()
-        self.connection = self.getConnection()
+        self.getConnection()
     
     def getPorts(self):
         ports = scan_serial()
         print(ports)
         return ports
 
-    def getConnection(self, port_n=3):
-        print("conn attempt done")
-        if self.ports:
-            if (len(self.ports)<port_n):
-                return OBD(self.ports[port_n])
+    def getConnection(self, port_n=0):
+        if self.connection:
+            return self.connection
         else:
-            return None
-    
+            if len(self.ports) > 0:
+                
+                print("conn attempt done")
+                if port_n < len(self.ports):
+                    print("connecting to port " + self.ports[port_n] )
+                    self.connection=OBD(self.ports[port_n], fast=False, timeout=4)
+                else:
+                    self.connection=OBD(timeout=4, fast=False)
+            else:
+                print("Unable to connect")
+                return None
 
     def getCurrentData(self):
         return {

@@ -6,13 +6,13 @@ from trip import Trip
 from TripDB import TripDB
 from OBDConnection import OBDConnection
 
-database = TripDB()
-trip = Trip()
-chunk = Chunk()
-obdConnection = OBDConnection()
+database = None
+trip = None
+chunk = None
+obdConnection = None
 
 def initializeData():
-    global chunk, trip, database
+    global chunk, trip, database, obdConnection
 
     database = TripDB()
     chunk = Chunk()
@@ -64,3 +64,9 @@ def uploadAndDelete():
     database.upload()
     database.clear()
     return "Uploaded to database"
+
+@app.route('/connectOBD')
+def connectOBD():
+    global obdConnection
+    obdConnection = OBDConnection()
+    return {"obcConnection":obdConnection}
