@@ -1,14 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import Gauge from './components/Gauge';
+// import ndjsonStream from 'can-ndjson-stream';
+function streamerr(e) {
+	console.warn('Stream error');
+	console.warn(e);
+}
 
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
 	const [ processedData, setProcessedData ] = useState(0);
 	const [ streamData, setstreamData ] = useState(0);
-	const [ obdStatus, setOBDStatus] = useState(null);
 	useEffect(() => {
-		fetch('/start');
+		fetch('/start')
+			// .then(() => {
+			// 	fetch('/stream') // make a fetch request to a NDJSON stream service
+			// 		.then((response) => {
+			// 			// console.log(ndjsonStream(response.body))
+			// 			return ndjsonStream(response.body); //ndjsonStream parses the response.body
+			// 		})
+			// 		.then((todosStream) => {
+			// 			var reader = todosStream.getReader();
+			// 			reader.read().then(function read(result) {
+			// 				console.log('result', result);
+			// 				if (result.done) {
+			// 					console.log('result', result.value);
+			// 					return;
+			// 				}
+			// 				console.log(result.value);
+			// 				setstreamData(result.value);
+			// 				reader.read().then(read, streamerr); //recurse through the stream
+			// 			}, streamerr);
+			// 		});
+			// });
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
@@ -21,7 +45,7 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			100
+			10
 		);
 		const processedDataCall = setInterval(
 			() =>

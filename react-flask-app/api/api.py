@@ -24,6 +24,7 @@ app = Flask(__name__)
 @app.route('/start')
 def start_trip():
     initializeData()
+    return "Start APP"
 
 
 @app.route('/time')
@@ -34,15 +35,15 @@ def get_current_time():
 
 
     
-# @app.route('/streamData')
-# def getCurrentData():
-#     global chunk
-#     def generate():
-#         while True:
-#             current_data = obdConnection.getCurrentData()   
-#             chunk.update(current_data)
-#             yield current_data
-#     return Response(generate(), mimetype='text/json')
+@app.route('/stream')
+def getStream():
+    def generate():
+        while obdConnection.getCurrentData():
+            chunk.update(obdConnection.getCurrentData())
+            time.sleep(0.4)
+            yield str(obdConnection.getCurrentData())+"\n"
+    return Response(generate(), mimetype='application/json')
+
 @app.route('/streamData')
 def getCurrentData():
     global chunk
