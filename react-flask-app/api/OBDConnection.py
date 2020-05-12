@@ -1,5 +1,5 @@
 import random
-from obd import scan_serial, OBD, commands
+from obd import scan_serial, Async, commands
 
 class OBDConnection:
     ports = None
@@ -19,16 +19,33 @@ class OBDConnection:
             return self.connection
         else:
             if len(self.ports) > 0:
-                
                 print("conn attempt done")
                 if port_n < len(self.ports):
                     print("connecting to port " + self.ports[port_n] )
-                    self.connection=OBD(self.ports[port_n], fast=False, timeout=4)
+                    self.connection=Async(self.ports[port_n])
+                    self.connection.watch(commands['SPEED']) # keep track of the RPM
+                    self.connection.watch(commands['RPM']) # keep track of the RPM
+                    self.connection.watch(commands['ENGINE_LOAD']) # keep track of the RPM
+                    self.connection.watch(commands['THROTTLE_POS']) # keep track of the RPM
+                    self.connection.watch(commands['COOLANT_TEMP']) # keep track of the RPM
+                    self.connection.start()
+                    return self.connection
                 else:
-                    self.connection=OBD(timeout=4, fast=False)
+                    self.connection=Async()
+                    self.connection.watch(commands['SPEED']) # keep track of the RPM
+                    self.connection.watch(commands['RPM']) # keep track of the RPM
+                    self.connection.watch(commands['ENGINE_LOAD']) # keep track of the RPM
+                    self.connection.watch(commands['THROTTLE_POS']) # keep track of the RPM
+                    self.connection.watch(commands['COOLANT_TEMP']) # keep track of the RPM
+                    self.connection.start()  
+                    return self.connection
             else:
                 print("Unable to connect")
                 return None
+
+    def closeConnection(self, port_n=0):
+        if self.connection:
+            return self.connection.close()
 
     def getCurrentData(self):
         return {
@@ -36,7 +53,7 @@ class OBDConnection:
             'rpm': self.getRPM(),
             'engineLoad': self.getEngineLoad(),
             'coolantTemp': self.getCoolantTemp(),
-            'throttlePos': self.getThrottlePos()
+            'throttlePos': round(self.getThrottlePos(),2)
         }
 
     def getSpeed(self):
@@ -58,7 +75,7 @@ class OBDConnection:
             else:
                 return (query.value.magnitude)
         else:
-            return random.randrange(0,150)
+            return random.randrange(0,15000)
 
 
     def getEngineLoad(self):

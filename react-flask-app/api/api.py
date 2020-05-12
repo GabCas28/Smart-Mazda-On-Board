@@ -1,29 +1,28 @@
 import time
-from flask import Flask
+from flask import Flask, Response
 import random
 from chunk import Chunk
 from trip import Trip
 from TripDB import TripDB
 from OBDConnection import OBDConnection
 
-database = None
-trip = None
-chunk = None
-obdConnection = None
+database = TripDB()
+trip = Trip()
+chunk = Chunk()
+obdConnection = OBDConnection()
 
-def initializeData():
-    global chunk, trip, database, obdConnection
-
-    database = TripDB()
-    chunk = Chunk()
-    trip = Trip()
-    obdConnection = OBDConnection()
+# def initializeData():
+#     global chunk, trip, database, obdConnection
+#     database = TripDB()
+#     trip = Trip()
+#     chunk = Chunk()
+#     obdConnection = OBDConnection()
 
 
 app = Flask(__name__)
-@app.route('/start')
-def start_trip():
-    initializeData()
+# @app.route('/start')
+# def start_trip():
+#     initializeData()
 
 
 @app.route('/time')
@@ -33,6 +32,16 @@ def get_current_time():
     }
 
 
+    
+# @app.route('/streamData')
+# def getCurrentData():
+#     global chunk
+#     def generate():
+#         while True:
+#             current_data = obdConnection.getCurrentData()   
+#             chunk.update(current_data)
+#             yield current_data
+#     return Response(generate(), mimetype='text/json')
 @app.route('/streamData')
 def getCurrentData():
     global chunk
@@ -68,5 +77,8 @@ def uploadAndDelete():
 @app.route('/connectOBD')
 def connectOBD():
     global obdConnection
-    obdConnection = OBDConnection()
-    return {"obcConnection":obdConnection}
+    if obdConnection:
+        return "ALREADY CONNECTED" 
+    else: 
+        obdConnection = OBDConnection()
+        return "OBD CONNECTED"
