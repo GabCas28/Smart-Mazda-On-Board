@@ -7,7 +7,7 @@ This project is buildt using React as front-end and Flask as back-end.
 
 Navigate to react-flask-app/api and run:
 
-### flask run
+### `flask run`
 
 A virtual environment is recommended since some requirements need to be installed beforehand.
 
@@ -15,4 +15,6 @@ A virtual environment is recommended since some requirements need to be installe
 
 Navigate to react-flask-app and run the command:
 
-### npm start 
+### `npm start` 
+
+
