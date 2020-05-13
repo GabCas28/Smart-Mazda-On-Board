@@ -1,4 +1,4 @@
-# Smart-Mazda-On-Board
+# Smart Mazda On-Board
 Smart Mazda project to display real data from On Board Diagntostics System of Mazda Car
 
 This project is buildt using React as front-end and Flask as back-end.
