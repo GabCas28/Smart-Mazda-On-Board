@@ -7,17 +7,18 @@ function Gauge({ data, width, height, minValue, maxValue, value }) {
 	const startAngle = -pi / 2;
 	const endAngle = -startAngle;
 	let div = new ReactFauxDOM.Element('div');
+	let margin, graphHeight, graphWidth;
 	let svg = createSVG(div);
 	createGaugeBackground(svg);
 	createGauge(svg);
 	createText(svg);
 
 	function createSVG(div) {
-		const margin = { top: 20, right: 20, bottom: 20, left: 20 },
-			graphWidth = width - 50 - margin.left - margin.right,
-			graphHeight = height - margin.top - margin.bottom;
+		margin = { top: 20, right: 20, bottom: 20, left: 20 };
+		graphWidth = width - 50 - margin.left - margin.right;
+		graphHeight = height - margin.top - margin.bottom;
 
-		const cent = { x: graphWidth / 2 + 5, y: graphHeight / 2 + 5 };
+		const cent = { x: graphWidth / 2 , y: graphHeight / 2 + 45 };
 
 		return (
 			d3
@@ -43,8 +44,8 @@ function Gauge({ data, width, height, minValue, maxValue, value }) {
 
 		var arc = d3
 			.arc()
-			.innerRadius(40)
-			.outerRadius(50)
+			.innerRadius(graphWidth / 4)
+			.outerRadius(graphWidth / 4 - 10)
 			.startAngle(function(d) {
 				return d;
 			})
@@ -78,7 +79,12 @@ function Gauge({ data, width, height, minValue, maxValue, value }) {
 		// color.domain(data.map((d) => getMidi(d)));
 
 		const pie = d3.pie().sort(null).value((e) => e);
-		const arcPath = d3.arc().innerRadius(40).outerRadius(50).startAngle(endAngle).endAngle((e) => angle(e));
+		const arcPath = d3
+			.arc()
+			.innerRadius(graphWidth / 4)
+			.outerRadius(graphWidth / 4 - 10)
+			.startAngle(endAngle)
+			.endAngle((e) => angle(e));
 		const paths = svg.selectAll('path.gauge').data(_data);
 		paths
 			.enter()
@@ -91,7 +97,16 @@ function Gauge({ data, width, height, minValue, maxValue, value }) {
 			.attr('d', arcPath);
 	}
 	function createText(svg) {
-		svg.selectAll('text').data([ value ]).enter().append('text').attr('x', 0).attr('y', 0).text((d) => d);
+		let marker = svg.selectAll('text').data([ value ]).enter();
+		marker
+			.append('text')
+			.attr('id', 'marker')
+			.attr('font-size', graphHeight / 4)
+			.attr('x', 0)
+			.attr('y', 0)
+			.text((d) => d);
+		marker.append('text')
+		.attr('font-size', graphHeight / 18).attr('x', graphWidth / 7 ).attr('y', 0).text('Km/h');
 	}
 	return div.toReact();
 }
