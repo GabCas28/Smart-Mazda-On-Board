@@ -2,11 +2,11 @@ import ReactFauxDOM from 'react-faux-dom';
 import './LineGraph.css';
 import * as d3 from 'd3';
 
-function LineGraph({ data, width, height, title, units, average, time }) {
+function LineGraph({ data, width, height, title, units, average, time, temp, minTemp, maxTemp }) {
 	let margin, graphWidth, graphHeight;
 	let div = new ReactFauxDOM.Element('div');
 	let svg = createSVG(div);
-
+	let colorScaleTemp = d3.scaleSequential(d3.interpolateRdYlBu).domain([maxTemp, minTemp]);
 	function createSVG(div) {
 		margin = { top: 20, right: 50, bottom: 10, left: 50 };
 		graphWidth = width - margin.left - margin.right;
@@ -27,6 +27,8 @@ function LineGraph({ data, width, height, title, units, average, time }) {
 	}
 	if (data) {
 		data = data.slice(-10);
+		temp = temp.slice(-10);
+		time = time.slice(-10);
 		var n = data.length;
 		var maxValue = Math.max(...data);
 		let [xScale, yScale] = createScales(svg)
@@ -50,7 +52,11 @@ function LineGraph({ data, width, height, title, units, average, time }) {
 			.data(data)
 			.enter()
 			.append('circle') // Uses the enter().append() method
-			.attr('class', 'dot'); // Assign a class for styling
+			.attr('class', 'dot') // Assign a class for styling
+			.attr('fill',(d,i)=>{
+				console.log("temp",temp[i]);
+				console.log("color", colorScaleTemp(temp[i]))
+				return colorScaleTemp(temp[i])});
 
 		var label = svg.append('text').attr('class', 'label');
 
@@ -61,34 +67,7 @@ function LineGraph({ data, width, height, title, units, average, time }) {
 			.attr('cy', function(d) {
 				return yScale(d);
 			})
-			.attr('r', 5)
-			.on('mouseover', function(elem, index, data) {
-				let coordinates = d3.mouse(this);
-				let x = coordinates[0];
-				let y = coordinates[1];
-				console.log('time', time);
-				let dateObj = new Date(time[index] * 1000);
-				let hours = dateObj.getHours();
-				let minutes = dateObj.getMinutes();
-				let seconds = dateObj.getSeconds();
-				let timeString =
-					hours.toString().padStart(2, '0') +
-					':' +
-					minutes.toString().padStart(2, '0') +
-					':' +
-					seconds.toString().padStart(2, '0');
-				label
-					.attr('id', title + '-label-' + index)
-					.attr('x', x - 20)
-					.attr('y', y - 20)
-					.attr('text-anchor', 'middle')
-					.text(elem + ' ' + units + ' ' + timeString);
-				//$(this).toggleClass('focus');
-			})
-			.on('mouseout', function() {
-				label.text('');
-				//$(this).removeClass('focus');
-			});
+			.attr('r', 5);
 
 		svg.append('text').attr('x', graphWidth / 2).attr('y', 0 ).attr('text-anchor', 'middle').text(title);
 		function createScales() {
@@ -137,18 +116,7 @@ function LineGraph({ data, width, height, title, units, average, time }) {
 				.attr('text-anchor', 'start')
 				.text(maximum + ' ' + units);
 
-			let avgReference = svg.append('g').attr('class', 'reference');
-			avgReference
-				.append('path')
-				.datum([ average, average ])
-				.attr('class', 'average')
-				.attr('d', d3.line().x((_, i) => i * graphWidth).y((d) => yScale(d)));
-			avgReference
-				.append('text')
-				.attr('x', graphWidth)
-				.attr('y', yScale(average) - 10)
-				.attr('text-anchor', 'end')
-				.text(average);
+			
 		}
 	}
 

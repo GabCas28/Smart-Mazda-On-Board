@@ -2,13 +2,14 @@ import ReactFauxDOM from 'react-faux-dom';
 import './Gauge.css';
 import * as d3 from 'd3';
 
-function Gauge({ data, width, height, minValue, maxValue, value }) {
+function Gauge({ data, width, height, minValue, maxValue, value, throttle }) {
 	const pi = Math.PI;
 	const startAngle = -pi / 2;
 	const endAngle = -startAngle;
 	let div = new ReactFauxDOM.Element('div');
 	let margin, graphHeight, graphWidth;
 	let svg = createSVG(div);
+	let colorScaleThrottle = d3.scaleSequential(d3.interpolateOranges).domain([0, 100]);
 	createGaugeBackground(svg);
 	createGauge(svg);
 	createText(svg);
@@ -104,6 +105,7 @@ function Gauge({ data, width, height, minValue, maxValue, value }) {
 			.attr('font-size', graphHeight / 4)
 			.attr('x', 0)
 			.attr('y', 0)
+			.attr('stroke',colorScaleThrottle(throttle))
 			.text((d) => d);
 		marker.append('text')
 		.attr('font-size', graphHeight / 18).attr('x', graphWidth / 7 ).attr('y', 0).text('Km/h');

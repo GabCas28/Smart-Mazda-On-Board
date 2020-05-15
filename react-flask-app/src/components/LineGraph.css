@@ -1,44 +1,43 @@
-.lineGraph .canvas {
-    min-height: 400px;
-    background: black;
-}
-
-.lineGraph path {
-    fill: none;
-    stroke: #927979;
-    stroke-width: 1.5;
-}
-
-.lineGraph .dot {
-    fill: #560808;
-    stroke: black;
-}
-
-.lineGraph .dot.focus {
-    fill: rebeccapurple;
-    r: 10;
-}
-
-.lineGraph text {
-    fill: grey;
-}
-
-.lineGraph .label {
-    fill: black;
-}
-
-.lineGraph .reference path {
-    stroke: #7e7eaf;
-}
-
-.lineGraph path.minimum {
-    stroke-dasharray: 8;
-}
-
-.lineGraph path.average {
-    stroke-dasharray: 8 20 1;
-}
-
-.lineGraph .reference text:hover {
-    fill: white;
-}
+    .lineGraph .canvas {
+        min-height: 400px;
+        background: black;
+    }
+    
+    .lineGraph path {
+        fill: none;
+        stroke: #927979;
+        stroke-width: 0.5;
+    }
+    
+    .lineGraph .dot {
+        r: 4px;
+    }
+    
+    .lineGraph .dot.focus {
+        fill: rebeccapurple;
+        r: 10;
+    }
+    
+    .lineGraph text {
+        fill: grey;
+    }
+    
+    .lineGraph .label {
+        fill: black;
+    }
+    
+    .lineGraph .reference path {
+        stroke: #7e7eaf;
+    }
+    
+    .lineGraph path.minimum {
+        stroke-dasharray: 8;
+    }
+    
+    .lineGraph path.average {
+        stroke-dasharray: 8 20 1;
+    }
+    
+    .lineGraph .reference text:hover {
+        fill: white;
+    }

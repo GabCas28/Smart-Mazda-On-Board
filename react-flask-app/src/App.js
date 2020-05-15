@@ -108,6 +108,7 @@ function App() {
 					width={400}
 					height={150}
 					value={streamData.speed}
+					throttle={streamData.throttlePos}
 				/>
 
 				<LineGraph
@@ -118,6 +119,9 @@ function App() {
 					title="Engine Load"
 					units="%"
 					time={processedData.time}
+					temp={processedData.coolantTemp}
+					minTemp={-40}
+					maxTemp={215}
 				/>
 			</div>
 		</div>
