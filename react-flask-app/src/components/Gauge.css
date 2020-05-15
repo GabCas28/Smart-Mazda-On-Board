@@ -8,7 +8,7 @@ text {
 }
 
 #marker {
-    fill: white;
-    /* font-size: 560%; */
+    font-size: 364%;
     font-weight: 700;
+    stroke-width: 2.5px;
 }

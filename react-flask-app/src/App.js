@@ -120,8 +120,8 @@ function App() {
 					units="%"
 					time={processedData.time}
 					temp={processedData.coolantTemp}
-					minTemp={-40}
-					maxTemp={215}
+					minTemp={40}
+					maxTemp={120}
 				/>
 			</div>
 		</div>

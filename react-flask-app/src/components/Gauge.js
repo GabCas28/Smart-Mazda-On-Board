@@ -105,10 +105,8 @@ function Gauge({ data, width, height, minValue, maxValue, value, throttle }) {
 			.attr('font-size', graphHeight / 4)
 			.attr('x', 0)
 			.attr('y', 0)
-			.attr('stroke',colorScaleThrottle(throttle))
+			.attr('style', "fill: "+colorScaleThrottle(throttle))
 			.text((d) => d);
-		marker.append('text')
-		.attr('font-size', graphHeight / 18).attr('x', graphWidth / 7 ).attr('y', 0).text('Km/h');
 	}
 	return div.toReact();
 }

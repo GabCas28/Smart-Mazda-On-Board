@@ -53,10 +53,7 @@ function LineGraph({ data, width, height, title, units, average, time, temp, min
 			.enter()
 			.append('circle') // Uses the enter().append() method
 			.attr('class', 'dot') // Assign a class for styling
-			.attr('fill',(d,i)=>{
-				console.log("temp",temp[i]);
-				console.log("color", colorScaleTemp(temp[i]))
-				return colorScaleTemp(temp[i])});
+			.attr('fill',(d,i)=>colorScaleTemp(temp[i]));
 
 		var label = svg.append('text').attr('class', 'label');
 
