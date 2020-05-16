@@ -133,7 +133,7 @@ function App() {
 				<Gauge
 					data={streamData.rpm}
 					minValue={0}
-					maxValue={16384}
+					maxValue={10000}
 					width={400}
 					height={150}
 					value={streamData.speed}
