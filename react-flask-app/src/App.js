@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import Gauge from './components/Gauge';
 import LineGraph from './components/LineGraph';
+import logo from './logo.svg'; // Tell webpack this JS file uses this image
 // import ndjsonStream from 'can-ndjson-stream';
 
 function secondsToHHMMSS(sec) {
@@ -42,12 +43,31 @@ function decomposeTrip(trip) {
 		time: time
 	};
 }
-
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
 	const [ processedData, setProcessedData ] = useState(0);
 	const [ streamData, setstreamData ] = useState(0);
 	const [ trip, setTrip ] = useState([]);
+
+	function refreshPage() {
+		window.location.reload(false);
+	}
+	function uploadClick() {
+		fetch('/upload').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
+	function clearClick() {
+		fetch('/clear').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
+
+	function connectClick() {
+		fetch('/connectOBD').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
 	useEffect(() => {
 		fetch('/start');
 		// .then(() => {
@@ -100,7 +120,16 @@ function App() {
 	return (
 		<div className="App black">
 			<div className="container grey-text center">
-				<h4>{currentTime}</h4>
+				<div className="container">
+					<button className="btn right" onClick={uploadClick}>
+						Upload
+					</button>
+					<button className="btn left red darken-4" onClick={clearClick}>
+						Clear
+					</button>
+					<h1>Smart Mazda</h1>
+					<div className="col s4"><h4>{currentTime}</h4></div>
+				</div>
 				<Gauge
 					data={streamData.rpm}
 					minValue={0}

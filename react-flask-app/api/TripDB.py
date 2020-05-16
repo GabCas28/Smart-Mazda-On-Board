@@ -1,10 +1,11 @@
 from tinydb import TinyDB, Query, where
 from tinydb.operations import delete, add, set
 # import json
-from pymongo import MongoClient
-from bson import json_util
+from pymongo import MongoClient, ReplaceOne
+from bson import json_util, objectid
+from pymongo.errors import BulkWriteError
 import time
-
+import pprint
 class TripDB:
     database = None
     def __init__(self):
@@ -23,7 +24,17 @@ class TripDB:
         """ Upload the content of the database to the remote server """
         client = MongoClient("mongodb+srv://mazda:V2KMvmtixGkOxq2h@cluster0-lpt2w.gcp.mongodb.net/test?retryWrites=true&w=majority")
         remoteDB = client.SmartMazda.trips
-        remoteDB.insert_many(self.database.all())
+        operations = [ReplaceOne(
+            filter={"startTime": doc["startTime"]}, 
+            replacement=doc,
+            upsert=True
+            ) for doc in self.database.all()]
+        try:
+            result = remoteDB.bulk_write(operations)
+        except BulkWriteError as bwe:
+            print(bwe.details)
+
+        return (json_util.dumps(result.bulk_api_result))
 
     def clear(self):
         """ Delete the content of the local database """

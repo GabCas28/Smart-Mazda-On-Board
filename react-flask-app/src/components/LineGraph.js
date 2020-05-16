@@ -8,7 +8,7 @@ function LineGraph({ data, width, height, title, units, average, time, temp, min
 	let svg = createSVG(div);
 	let colorScaleTemp = d3.scaleSequential(d3.interpolateRdYlBu).domain([maxTemp, minTemp]);
 	function createSVG(div) {
-		margin = { top: 20, right: 50, bottom: 10, left: 50 };
+		margin = { top: 20, right: 50, bottom: 30, left: 50 };
 		graphWidth = width - margin.left - margin.right;
 		graphHeight = height - margin.top - margin.bottom;
 
@@ -26,9 +26,9 @@ function LineGraph({ data, width, height, title, units, average, time, temp, min
 		);
 	}
 	if (data) {
-		data = data.slice(-10);
-		temp = temp.slice(-10);
-		time = time.slice(-10);
+		data = data.slice(-20);
+		temp = temp.slice(-20);
+		time = time.slice(-20);
 		var n = data.length;
 		var maxValue = Math.max(...data);
 		let [xScale, yScale] = createScales(svg)

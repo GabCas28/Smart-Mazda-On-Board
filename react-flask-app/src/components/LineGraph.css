@@ -10,7 +10,7 @@
     }
     
     .lineGraph .dot {
-        r: 4px;
+        r: 3px;
     }
     
     .lineGraph .dot.focus {
