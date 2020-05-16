@@ -22,7 +22,7 @@ class OBDConnection:
                 print("conn attempt done")
                 if port_n < len(self.ports):
                     print("connecting to port " + self.ports[port_n] )
-                    self.connection=Async(self.ports[port_n])
+                    self.connection=Async(self.ports[port_n],baudrate=115200, delay_cmds=0)
                     self.connection.watch(commands['SPEED']) # keep track of the RPM
                     self.connection.watch(commands['RPM']) # keep track of the RPM
                     self.connection.watch(commands['ENGINE_LOAD']) # keep track of the RPM
@@ -31,7 +31,7 @@ class OBDConnection:
                     self.connection.start()
                     return self.connection
                 else:
-                    self.connection=Async()
+                    self.connection=Async(baudrate=115200, delay_cmds=0)
                     self.connection.watch(commands['SPEED']) # keep track of the RPM
                     self.connection.watch(commands['RPM']) # keep track of the RPM
                     self.connection.watch(commands['ENGINE_LOAD']) # keep track of the RPM
@@ -49,9 +49,9 @@ class OBDConnection:
 
     def getCurrentData(self):
         return {
-            'speed': self.getSpeed(),
+            'speed': round(self.getSpeed(),2),
             'rpm': round(self.getRPM(),0),
-            'engineLoad': self.getEngineLoad(),
+            'engineLoad': round(self.getEngineLoad(),2),
             'coolantTemp': self.getCoolantTemp(),
             'throttlePos': round(self.getThrottlePos(),2)
         }

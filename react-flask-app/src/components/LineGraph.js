@@ -1,99 +1,123 @@
 import ReactFauxDOM from 'react-faux-dom';
-import './Gauge.css';
+import './LineGraph.css';
 import * as d3 from 'd3';
 
-function Gauge({ data, width, height, minValue, maxValue, value }) {
-	const pi = Math.PI;
-	const startAngle = -pi / 2;
-	const endAngle = -startAngle;
+function LineGraph({ data, width, height, title, units, average, time, temp, minTemp, maxTemp }) {
+	let margin, graphWidth, graphHeight;
 	let div = new ReactFauxDOM.Element('div');
 	let svg = createSVG(div);
-	createGaugeBackground(svg);
-	createGauge(svg);
-	createText(svg);
-
+	let colorScaleTemp = d3.scaleSequential(d3.interpolateRdYlBu).domain([maxTemp, minTemp]);
 	function createSVG(div) {
-		const margin = { top: 20, right: 20, bottom: 20, left: 20 },
-			graphWidth = width - 50 - margin.left - margin.right,
-			graphHeight = height - margin.top - margin.bottom;
-
-		const cent = { x: graphWidth / 2 + 5, y: graphHeight / 2 + 5 };
+		margin = { top: 20, right: 50, bottom: 30, left: 50 };
+		graphWidth = width - margin.left - margin.right;
+		graphHeight = height - margin.top - margin.bottom;
 
 		return (
 			d3
 				.select(div)
 				.append('svg')
 				.attr('preserveAspectRatio', 'xMinYMin meet')
-				.attr('viewBox', '0 0 ' + graphWidth + ' ' + graphHeight)
+				.attr('viewBox', '0 0 ' + width + ' ' + height)
 				// .attr('width', graphWidth + margin.left + margin.right)
 				// .attr('height', graphHeight + margin.top + margin.bottom)
 				.append('g')
-				.attr('transform', `translate(${cent.x},${cent.y})`)
+				.attr('class', 'lineGraph')
+				.attr('transform', `translate(${margin.left},${margin.top})`)
 		);
 	}
+	if (data) {
+		data = data.slice(-20);
+		temp = temp.slice(-20);
+		time = time.slice(-20);
+		var n = data.length;
+		var maxValue = Math.max(...data);
+		let [xScale, yScale] = createScales(svg)
+		paintReferences(svg);
+		// Add the line
+		svg.append('path').datum(data).attr(
+			'd',
+			d3
+				.line()
+				.x(function(d, i) {
+					return xScale(i);
+				})
+				.y(function(d) {
+					return yScale(d);
+				})
+		);
 
-	function createGaugeBackground(svg) {
-		let n = 20;
-		let data_background = [ startAngle, pi / 16, 5 * pi / 16 ];
-		let pie_background = data_background.slice(0);
-		let colors = [ 'green', 'yellow', 'red' ];
-		let colorScale = (d, i) => colors[i];
-
-		pie_background.push(endAngle);
-
-		var arc = d3
-			.arc()
-			.innerRadius(40)
-			.outerRadius(50)
-			.startAngle(function(d) {
-				return d;
-			})
-			.endAngle(function(d, i) {
-				return pie_background[i + 1];
-			});
-
-		var slice = svg.append('g').selectAll('path.slice').data(data_background);
-
-		slice
+		// Appends a circle for each datapoint
+		var dots = svg
+			.selectAll('.dot')
+			.data(data)
 			.enter()
-			.append('path')
-			.attr('class', 'slice')
-			.attr('d', arc)
-			.attr('fill', function(d, i) {
-				return colorScale(d, i);
+			.append('circle') // Uses the enter().append() method
+			.attr('class', 'dot') // Assign a class for styling
+			.attr('fill',(d,i)=>colorScaleTemp(temp[i]));
+
+		var label = svg.append('text').attr('class', 'label');
+
+		dots
+			.attr('cx', function(d, i) {
+				return xScale(i);
 			})
-			.attr('stroke', 'black')
-			.attr('stroke-width', 0);
-		// .attr('stroke', function(d,i) {
-		// 	return colorScale(d,i);
-		// // })
-		// .attr('stroke-width', 4);
+			.attr('cy', function(d) {
+				return yScale(d);
+			})
+			.attr('r', 5);
+
+		svg.append('text').attr('x', graphWidth / 2).attr('y', 0 ).attr('text-anchor', 'middle').text(title);
+		function createScales() {
+			// X scale will use the index of our data
+			let xScale = d3
+				.scaleLinear()
+				.domain([ 0, n - 1 ]) // input
+				.range([ 0, graphWidth ]); // output
+
+			// Y scale will use the randomly generate number
+			let yScale = d3
+				.scaleLinear()
+				.domain([ 0, maxValue + maxValue / 4 ]) // input
+				.range([ graphHeight, 0 ]); // output
+				
+			return [xScale, yScale];
+		}
+		function paintReferences(svg) {
+			let minimum = Math.min(...data);
+			let maximum = Math.max(...data);
+			let minReference = svg.append('g').attr('class', 'reference');
+
+			minReference
+				.append('path')
+				.datum([ minimum, minimum ])
+				.attr('class', 'minimum')
+				.attr('d', d3.line().x((_, i) => i * graphWidth).y((d) => yScale(d)));
+
+			minReference
+				.append('text')
+				.attr('x', 20)
+				.attr('y', yScale(minimum) + 20)
+				.attr('text-anchor', 'end')
+				.text(minimum + ' ' + units);
+
+			let maxReference = svg.append('g').attr('class', 'reference');
+			maxReference
+				.append('path')
+				.datum([ maximum, maximum ])
+				.attr('class', 'maximum')
+				.attr('d', d3.line().x((_, i) => i * graphWidth).y((d) => yScale(d)));
+			maxReference
+				.append('text')
+				.attr('x', 20)
+				.attr('y', yScale(maximum) - 10)
+				.attr('text-anchor', 'start')
+				.text(maximum + ' ' + units);
+
+			
+		}
 	}
 
-	function createGauge(svg) {
-		let angle = d3.scaleLinear().range([ startAngle, endAngle ]).domain([ minValue, maxValue ]);
-		let _data = [];
-		_data.push(data);
-		// const color = d3.scaleOrdinal(d3['schemeSet3']);
-		// color.domain(data.map((d) => getMidi(d)));
-
-		const pie = d3.pie().sort(null).value((e) => e);
-		const arcPath = d3.arc().innerRadius(40).outerRadius(50).startAngle(endAngle).endAngle((e) => angle(e));
-		const paths = svg.selectAll('path.gauge').data(_data);
-		paths
-			.enter()
-			.append('path')
-			.attr('class', 'arc')
-			.attr('fill', 'darkblue')
-			.attr('opacity', '1')
-			.attr('stroke', 'black')
-			.attr('stroke-width', 5)
-			.attr('d', arcPath);
-	}
-	function createText(svg) {
-		svg.selectAll('text').data([ value ]).enter().append('text').attr('x', 0).attr('y', 0).text((d) => d);
-	}
 	return div.toReact();
 }
 
-export default Gauge;
+export default LineGraph;

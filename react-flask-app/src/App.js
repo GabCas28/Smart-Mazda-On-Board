@@ -1,38 +1,95 @@
 import React, { useEffect, useState } from 'react';
 import './App.css';
 import Gauge from './components/Gauge';
+import LineGraph from './components/LineGraph';
+import logo from './logo.svg'; // Tell webpack this JS file uses this image
 // import ndjsonStream from 'can-ndjson-stream';
-function streamerr(e) {
-	console.warn('Stream error');
-	console.warn(e);
-}
 
+function secondsToHHMMSS(sec) {
+	const days = Math.floor(sec / 86400);
+	const hours = Math.floor((sec - days * 86400) / 3600);
+	const minutes = Math.floor((sec - days * 86400 - hours * 3600) / 60);
+	const seconds = Math.floor(sec - days * 86400 - hours * 3600 - minutes * 60);
+	let result = '';
+	if (days > 0) result += days.toString() + ' days ';
+	if (hours > 0) result += hours.toString() + ' hours ';
+	if (minutes > 0) result += minutes.toString() + "' ";
+	result += seconds.toString() + '" ';
+
+	return result;
+}
+function decomposeTrip(trip) {
+	let speed = [];
+	let rpm = [];
+	let engineLoad = [];
+	let coolantTemp = [];
+	let throttlePos = [];
+	let time = [];
+	trip.snaps.map((e) => {
+		speed.push(e.speed);
+		rpm.push(e.rpm);
+		engineLoad.push(e.engineLoad);
+		coolantTemp.push(e.coolantTemp);
+		throttlePos.push(e.throttlePos);
+		time.push(e.startTime);
+	});
+	return {
+		...trip,
+		speed: speed,
+		rpm: rpm,
+		engineLoad: engineLoad,
+		coolantTemp: coolantTemp,
+		throttlePos: throttlePos,
+		time: time
+	};
+}
 function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
 	const [ processedData, setProcessedData ] = useState(0);
 	const [ streamData, setstreamData ] = useState(0);
+	const [ trip, setTrip ] = useState([]);
+
+	function refreshPage() {
+		window.location.reload(false);
+	}
+	function uploadClick() {
+		fetch('/upload').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
+	function clearClick() {
+		fetch('/clear').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
+
+	function connectClick() {
+		fetch('/connectOBD').then((res) => res.json()).then(async (data) => {
+			alert(JSON.stringify(data));
+		});
+	}
 	useEffect(() => {
-		fetch('/start')
-			// .then(() => {
-			// 	fetch('/stream') // make a fetch request to a NDJSON stream service
-			// 		.then((response) => {
-			// 			// console.log(ndjsonStream(response.body))
-			// 			return ndjsonStream(response.body); //ndjsonStream parses the response.body
-			// 		})
-			// 		.then((todosStream) => {
-			// 			var reader = todosStream.getReader();
-			// 			reader.read().then(function read(result) {
-			// 				console.log('result', result);
-			// 				if (result.done) {
-			// 					console.log('result', result.value);
-			// 					return;
-			// 				}
-			// 				console.log(result.value);
-			// 				setstreamData(result.value);
-			// 				reader.read().then(read, streamerr); //recurse through the stream
-			// 			}, streamerr);
-			// 		});
-			// });
+		fetch('/start');
+		// .then(() => {
+		// 	fetch('/stream') // make a fetch request to a NDJSON stream service
+		// 		.then((response) => {
+		// 			// console.log(ndjsonStream(response.body))
+		// 			return ndjsonStream(response.body); //ndjsonStream parses the response.body
+		// 		})
+		// 		.then((todosStream) => {
+		// 			var reader = todosStream.getReader();
+		// 			reader.read().then(function read(result) {
+		// 				console.log('result', result);
+		// 				if (result.done) {
+		// 					console.log('result', result.value);
+		// 					return;
+		// 				}
+		// 				console.log(result.value);
+		// 				setstreamData(result.value);
+		// 				reader.read().then(read, streamerr); //recurse through the stream
+		// 			}, streamerr);
+		// 		});
+		// });
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
@@ -45,12 +102,12 @@ function App() {
 				fetch('/streamData').then((res) => res.json()).then(async (data) => {
 					setstreamData(data);
 				}),
-			10
+			400
 		);
 		const processedDataCall = setInterval(
 			() =>
 				fetch('/processedData').then((res) => res.json()).then(async (data) => {
-					setProcessedData(data);
+					setProcessedData(decomposeTrip(data));
 				}),
 			4000
 		);
@@ -61,118 +118,39 @@ function App() {
 		};
 	}, []);
 	return (
-		<div className="App">
-			<header className="App-header">
-				{/* <Gauge/> */}
-				<p>The current time is {currentTime}.</p>
-				<table className="table centered  text-white">
-					<thead>
-						<tr>
-							<th> Type </th>
-							<th> Speed </th>
-							<th> Engine Load </th>
-							<th> Revolutions Per Minute </th>
-							<th> Throttle Position </th>
-							<th> Coolant Temp </th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr>
-							<td>Stream</td>
-							<td>{streamData.speed}</td>
-							<td>{streamData.engineLoad}</td>
-							<td>{streamData.rpm}</td>
-							<td>{streamData.throttlePos}</td>
-							<td>{streamData.coolantTemp}</td>
-						</tr>
-						<tr>
-							<td>Stream Average</td>
-							<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].speed : 0}</td>
-							<td>
-								{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].engineLoad : 0}
-							</td>
-							<td>{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].rpm : 0}</td>
-							<td>
-								{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].throttlePos : 0}
-							</td>
-							<td>
-								{processedData.snaps ? processedData.snaps[processedData.nSnaps - 1].coolantTemp : 0}
-							</td>
-						</tr>
-						<tr>
-							<td>Total Average</td>
-							<td>{processedData.avSpeed}</td>
-							<td>{processedData.avEngineLoad}</td>
-							<td>{processedData.avRPM}</td>
-							<td>{processedData.avThrottlePos}</td>
-							<td>{processedData.avCoolantTemp}</td>
-						</tr>
-						<tr>
-							<td>
-								<Gauge data={100} minValue={0} maxValue={100} width={400} height={200} value={100} />
-							</td>
-							<td>
-								<Gauge
-									data={streamData.speed}
-									minValue={0}
-									maxValue={150}
-									width={400}
-									height={200}
-									value={streamData.speed}
-								/>
-							</td>
-							<td>
-								<Gauge
-									data={streamData.engineLoad}
-									minValue={0}
-									maxValue={100}
-									width={400}
-									height={200}
-									value={streamData.engineLoad}
-								/>
-							</td>
-							<td>
-								<Gauge
-									data={streamData.rpm}
-									minValue={0}
-									maxValue={16384}
-									width={400}
-									height={200}
-									value={streamData.rpm}
-								/>
-							</td>
-							<td>
-								<Gauge
-									data={streamData.throttlePos}
-									minValue={0}
-									maxValue={100}
-									width={400}
-									height={200}
-									value={streamData.throttlePos}
-								/>
-							</td>
-							<td>
-								<Gauge
-									data={streamData.coolantTemp}
-									minValue={-40}
-									maxValue={215}
-									width={400}
-									height={200}
-									value={streamData.coolantTemp}
-								/>
-							</td>
-						</tr>
-					</tbody>
-				</table>
-			</header>
-			<div className="black">
+		<div className="App black">
+			<div className="container grey-text center">
+				<div className="container">
+					<button className="btn right" onClick={uploadClick}>
+						Upload
+					</button>
+					<button className="btn left red darken-4" onClick={clearClick}>
+						Clear
+					</button>
+					<h1>Smart Mazda</h1>
+					<div className="col s4"><h4>{currentTime}</h4></div>
+				</div>
 				<Gauge
 					data={streamData.rpm}
 					minValue={0}
 					maxValue={16384}
 					width={400}
-					height={200}
+					height={150}
 					value={streamData.speed}
+					throttle={streamData.throttlePos}
+				/>
+
+				<LineGraph
+					data={processedData.engineLoad}
+					length={10}
+					width={400}
+					height={100}
+					title="Engine Load"
+					units="%"
+					time={processedData.time}
+					temp={processedData.coolantTemp}
+					minTemp={40}
+					maxTemp={120}
 				/>
 			</div>
 		</div>

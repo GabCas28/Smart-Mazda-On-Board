@@ -24,7 +24,6 @@ app = Flask(__name__)
 @app.route('/start')
 def start_trip():
     initializeData()
-    return "Start APP"
 
 
 @app.route('/time')
@@ -68,22 +67,21 @@ def getTrip():
 @app.route('/upload')
 def upload():
     database.upload()
-    return "Uploaded to database"
+    return database.upload()
 
-@app.route('/uploadAndDelete')
-def uploadAndDelete():
-    database.upload()
+@app.route('/clear')
+def clear():
     database.clear()
-    return "Uploaded to database"
+    return {'OK': "Cleared previous trips from local database"}
 
 @app.route('/connectOBD')
 def connectOBD():
     global obdConnection
     if obdConnection:
-        return "ALREADY CONNECTED" 
+        return {'OBD':"ALREADY CONNECTED"} 
     else: 
         obdConnection = OBDConnection()
-        return "OBD CONNECTED"
+        return {"OBD": "CONNECTED"}
 
 def initTrip():
     global trip

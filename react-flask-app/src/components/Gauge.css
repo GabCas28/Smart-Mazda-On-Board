@@ -6,3 +6,9 @@ text {
     fill: grey;
     text-anchor: middle;
 }
+
+#marker {
+    font-size: 364%;
+    font-weight: 700;
+    stroke-width: 2.5px;
+}
