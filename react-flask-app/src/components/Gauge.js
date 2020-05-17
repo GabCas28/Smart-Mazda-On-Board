@@ -35,7 +35,7 @@ function Gauge({ data, width, height, minValue, maxValue, value, throttle }) {
 	}
 
 	function createGaugeBackground(svg) {
-		let n = 20;
+
 		let data_background = [ startAngle, pi / 16, 5 * pi / 16 ];
 		let pie_background = data_background.slice(0);
 		let colors = [ 'green', 'yellow', 'red' ];
@@ -79,7 +79,6 @@ function Gauge({ data, width, height, minValue, maxValue, value, throttle }) {
 		// const color = d3.scaleOrdinal(d3['schemeSet3']);
 		// color.domain(data.map((d) => getMidi(d)));
 
-		const pie = d3.pie().sort(null).value((e) => e);
 		const arcPath = d3
 			.arc()
 			.innerRadius(graphWidth / 4)

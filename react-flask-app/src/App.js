@@ -32,11 +32,7 @@ function App() {
 	const [ currentTime, setCurrentTime ] = useState(0);
 	const [ processedData, setProcessedData ] = useState(0);
 	const [ streamData, setstreamData ] = useState(0);
-	const [ trip, setTrip ] = useState([]);
 
-	function refreshPage() {
-		window.location.reload(false);
-	}
 	function uploadClick() {
 		fetch('/upload').then((res) => res.json()).then(async (data) => {
 			alert(JSON.stringify(data));

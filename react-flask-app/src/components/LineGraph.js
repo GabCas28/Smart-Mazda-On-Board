@@ -55,8 +55,6 @@ function LineGraph({ data, width, height, title, units, average, time, temp, min
 			.attr('class', 'dot') // Assign a class for styling
 			.attr('fill',(d,i)=>colorScaleTemp(temp[i]));
 
-		var label = svg.append('text').attr('class', 'label');
-
 		dots
 			.attr('cx', function(d, i) {
 				return xScale(i);
