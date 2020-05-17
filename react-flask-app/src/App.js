@@ -48,9 +48,9 @@ function App() {
 		});
 	}
 
-	function connectClick() {
-		fetch('/connectOBD').then((res) => res.json()).then(async (data) => {
-			alert(JSON.stringify(data));
+	function restartClick() {
+		fetch('/restart').then((res) => res.json()).then(async (data) => {
+			alert('Restarting server');
 		});
 	}
 	useEffect(() => {
@@ -84,16 +84,29 @@ function App() {
 	}, []);
 	return (
 		<div className="App black">
-			<div className="container grey-text center">
-				<div className="container">
-					<button className="btn right" onClick={uploadClick}>
-						Upload
-					</button>
-					<button className="btn left red darken-4" onClick={clearClick}>
-						Clear
-					</button>
-					<h1>Smart Mazda</h1>
-					<div className="col s4"><h4>{currentTime}</h4></div>
+			<div className="container  grey-text center">
+				<div className="row valign-wrapper">
+					<div className="col  s1">
+						<button className="btn green right darken-4" onClick={uploadClick}>
+							Upload
+						</button>
+					</div>
+					<div className="col left s1">
+						<button className="btn right blue darken-4 " onClick={clearClick}>
+							Clear
+						</button>
+					</div>
+					<div className="col  s1">
+						<button className="btn left grey darken-4" onClick={restartClick}>
+							Restart
+						</button>
+					</div>
+					<div className="col  s4">
+						<h1>Smart Mazda</h1>
+					</div>
+					<div className="col  s4">
+						<h4>{currentTime}</h4>
+					</div>
 				</div>
 				<Gauge
 					data={streamData.rpm}

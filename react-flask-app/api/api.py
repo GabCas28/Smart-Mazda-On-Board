@@ -4,7 +4,14 @@ import random
 from chunk import Chunk
 from trip import Trip
 from TripDB import TripDB
-from OBDConnection import OBDConnection
+from OBDConnection import OBDConnection as connect
+
+import os
+import sys
+import time 
+import subprocess
+from flask import Flask, request, jsonify
+from multiprocessing import Process, Queue
 
 database = None
 trip = None
@@ -17,12 +24,13 @@ def initializeData():
     initTrip()
     initChunk()
     initDB()
+    connectOBD()
 
 
 app = Flask(__name__)
 @app.route('/start')
 def start_trip():
-    connectOBD()
+    pass
 
 
 @app.route('/time')
@@ -79,8 +87,14 @@ def connectOBD():
     if obdConnection:
         return {'OBD':"ALREADY CONNECTED"} 
     else: 
-        obdConnection = OBDConnection()
-        return {"OBD": "CONNECTED"}
+        try:
+            obdConnection =["something"]
+            obdConnection = connect()
+            return {"OBD": "CONNECTED"}
+
+        except:
+            obdConnection = None
+            print("Something went wrong")
 
 def initTrip():
     global trip
@@ -97,9 +111,29 @@ def initDB():
     if not database:
         database=TripDB()
 
-if __name__ == '__main__':
-    app.run(debug=True)
+some_queue = None
+
+@app.route('/restart')
+def restart():
+    some_queue.put("something")
+    return {"OK":"Quit"}
+
+def start_flaskapp(queue):
+    global some_queue
+    some_queue = queue
     initializeData()
+    app.run(debug=True, use_reloader=False)
 
-
-initializeData()
+if __name__ == '__main__':
+    # app.run(debug=True, use_reloader=False)
+    q = Queue()
+    p = Process(target=start_flaskapp, args=[q,])
+    p.start()
+    while True: #wathing queue, sleep if there is no call, otherwise break
+        if q.empty(): 
+                time.sleep(1)
+        else:
+            break
+    p.terminate() #terminate flaskapp and then restart the app on subprocess
+    args = [sys.executable] + [sys.argv[0]]
+    subprocess.call(args)
