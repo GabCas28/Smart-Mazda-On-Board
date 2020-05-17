@@ -17,13 +17,12 @@ def initializeData():
     initTrip()
     initChunk()
     initDB()
-    connectOBD()
 
 
 app = Flask(__name__)
 @app.route('/start')
 def start_trip():
-    initializeData()
+    connectOBD()
 
 
 @app.route('/time')
@@ -97,3 +96,10 @@ def initDB():
     global database
     if not database:
         database=TripDB()
+
+if __name__ == '__main__':
+    app.run(debug=True)
+    initializeData()
+
+
+initializeData()

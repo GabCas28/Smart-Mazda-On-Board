@@ -2,22 +2,7 @@ import React, { useEffect, useState } from 'react';
 import './App.css';
 import Gauge from './components/Gauge';
 import LineGraph from './components/LineGraph';
-import logo from './logo.svg'; // Tell webpack this JS file uses this image
-// import ndjsonStream from 'can-ndjson-stream';
 
-function secondsToHHMMSS(sec) {
-	const days = Math.floor(sec / 86400);
-	const hours = Math.floor((sec - days * 86400) / 3600);
-	const minutes = Math.floor((sec - days * 86400 - hours * 3600) / 60);
-	const seconds = Math.floor(sec - days * 86400 - hours * 3600 - minutes * 60);
-	let result = '';
-	if (days > 0) result += days.toString() + ' days ';
-	if (hours > 0) result += hours.toString() + ' hours ';
-	if (minutes > 0) result += minutes.toString() + "' ";
-	result += seconds.toString() + '" ';
-
-	return result;
-}
 function decomposeTrip(trip) {
 	let speed = [];
 	let rpm = [];
@@ -70,26 +55,6 @@ function App() {
 	}
 	useEffect(() => {
 		fetch('/start');
-		// .then(() => {
-		// 	fetch('/stream') // make a fetch request to a NDJSON stream service
-		// 		.then((response) => {
-		// 			// console.log(ndjsonStream(response.body))
-		// 			return ndjsonStream(response.body); //ndjsonStream parses the response.body
-		// 		})
-		// 		.then((todosStream) => {
-		// 			var reader = todosStream.getReader();
-		// 			reader.read().then(function read(result) {
-		// 				console.log('result', result);
-		// 				if (result.done) {
-		// 					console.log('result', result.value);
-		// 					return;
-		// 				}
-		// 				console.log(result.value);
-		// 				setstreamData(result.value);
-		// 				reader.read().then(read, streamerr); //recurse through the stream
-		// 			}, streamerr);
-		// 		});
-		// });
 		const timeCall = setInterval(
 			() =>
 				fetch('/time').then((res) => res.json()).then(async (data) => {
