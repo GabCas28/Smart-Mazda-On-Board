@@ -22,7 +22,7 @@ class OBDConnection:
                 print("conn attempt done")
                 if port_n < len(self.ports):
                     print("connecting to port " + self.ports[port_n] )
-                    self.connection=Async(self.ports[port_n],baudrate=115200, delay_cmds=0)
+                    self.connection=Async(self.ports[port_n])#,baudrate=115200, delay_cmds=0)
                     self.connection.watch(commands['SPEED']) # keep track of the RPM
                     self.connection.watch(commands['RPM']) # keep track of the RPM
                     self.connection.watch(commands['ENGINE_LOAD']) # keep track of the RPM
